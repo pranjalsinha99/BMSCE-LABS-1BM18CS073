@@ -1,0 +1,438 @@
+Write HDL implementation for a 3-bit full adder using data flow model. Simulate the same using structural model and depict the timing diagram for valid inputs.
+
+module fa(a,b,cin,s,cout);
+input a,b,cin;
+output s,cout;
+assign s=a^b^cin;
+assign cout=(a&b)|(b&cin)|(cin&a);
+endmodule
+
+
+module fatest;
+reg a,b,cin;
+wire s,cout;
+fa f(a,b,cin,s,cout);
+initial 
+begin
+    $dumpfile("test10.vcd");
+    $dupvars(0,fatest);
+    a=1;b=1;cin=0;
+    #5
+    a=1;b=1;cin=1;
+    #5
+    a=0;b=1;cin=0
+    #100 $finish;
+    end
+endmodule
+
+
+
+
+
+
+
+Write HDL implementation for AND/OR/NOT gates using data flow model. Simulate the same using structural model and depict the timing diagram for valid inputs.
+
+module gates(a,b,y);
+input a,b;
+output [2:0]y;
+assign y[2]=a&b;
+assign y[1]=a|b;
+assign y[0]=~a;
+endmodule
+
+module gatestb;
+wire[2:0]y;
+reg a,b;
+gates gate(.y(y),.a(a),.b(b));
+initial
+begin
+$dumpfile("test6.vcd");
+$dumpvars(0,gatestb);
+a=1'b0;
+b=1'b0;
+#50;
+a=1'b0;
+b=1'b1;
+#50;
+a=1'b1;
+b=1'b0;
+#50;
+a=1'b1;
+b=1'b1;
+#50;
+end
+endmodule
+Write HDL implementation for a 4-to-2 encoder. Simulate the same using structural model and depict the timing diagram for valid inputs.
+
+module encoder(do,din,en);
+input en;
+input [3:0]din;
+output [1:0]do;
+reg[1:0]do;
+always @(en or din);
+initial
+begin
+if(en)
+begin
+case(din)
+    4'b0001:do=2'b00;
+    4'b0010:do=2'b01;
+    4'b0100:do=2'b10;
+    4'b1000:do=2'b11;
+endcase
+end
+end
+endmodule
+module encodertb;
+reg [3:0]din;
+reg en;
+wire [1:0]do;
+encoder encode(do,din,en);
+initial
+begin
+    $dumpfile("test7.vcd");
+    $dumpvars(0,encodertb);
+    en=1;
+    din=4'b0001;#100;
+    din=4'b0010;#100;
+    din=4'b0100;#100;
+    din=4'b1000;#100;
+end
+endmodule
+
+Write HDL implementation for a 2-to-4 decoder. Simulate the same using structural model and depict the timing diagram for valid inputs.
+
+module decoder24(a,en,y);
+input [1:0]a;
+input en;
+output [3:0]y;
+reg [3:0]y;
+always@(a,en)
+begin
+    if(en==1'b1)
+    begin
+          case(a)
+            2'b00:y=4'b0001;
+            2'b01:y=4'b0010;
+            2'b10:y=4'b0100;
+            2'b11:y=4'b1000;
+    endcase
+    end
+    else
+    y=4'bzzzz;
+end
+endmodule
+module testdec;
+reg [1:0]A;
+reg B;
+wire [3:0]x;
+decoder24 decod(A,B,x);
+initial
+begin
+    $dumpfile("test4.vcd");
+    $dumpvars(0,testdec);
+    B=1'b1;
+    A=2'b00;#10
+    A=2'b01;#10
+    A=2'b10;#10
+    A=2'b11;#10
+    #20;
+    $finish;
+end
+always #5 B=~B; 
+endmodule
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Write HDL implementation for a JK flip-flop using behavioral model. Simulate the same using structural model and depict the timing diagram for valid inputs module jkff(j,k,clk,reset,q,qbar);
+
+input j,k,clk,reset;
+output q,qbar;
+wire j,k,clk,reset;
+reg q,qbar;
+
+always @(posedge clk)
+begin
+if(reset)
+begin
+q=1'b0;
+qbar=1'b1;
+end
+else 
+begin
+
+case({j,k})
+{1'b0,1'b0}:begin q=q;qbar=qbar;end
+{1'b0,1'b1}:begin q=1'b0;qbar=1'b1;end
+{1'b1,1'b0}:begin q=1'b1;qbar=1'b0;end
+{1'b1,1'b1}:begin q=~q;qbar=~qbar;end
+endcase
+end
+end
+endmodule
+ 
+
+module jktest;
+reg clk,reset,j,k;
+wire q,qbar;
+
+jkff jkf(j,k,clk,reset,q,qbar);
+
+initial begin
+
+    $dumpfile("test9.vcd");
+    $dumpvars(0,jktest);
+    $monitor(clk,j,k,q,qbar,reset);
+
+    j=1'b0;
+    k=1'b0;
+    reset=1;
+    clk=1;
+
+    #10
+    reset=0;
+    j=1'b1;
+    k=1'b0;
+
+    #10
+    reset=0;
+    j=1'b0;
+    k=1'b1;
+
+    #10
+    reset=0;
+    j=1'b1;
+    k=1'b1;
+
+    #10
+    reset=0;
+    j=1'b0;
+    k=1'b0;
+    
+    #100
+    reset=1;
+    j=1'b1;
+    k=1'b0;
+
+    end
+    always #5 clk=~clk;
+endmodule
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Write HDL implementation for a 4:1 Multiplexer. Simulate the same using structural model and depict the timing diagram for valid inputs.
+
+module multiplexer(Do,Din,En);
+input En;
+input [3:0]Din;
+output [1:0]Do;
+reg [1:0]Do;
+always @(En or Din)
+
+begin
+if(En)
+ begin
+  case(Din)
+    4'b0001:Do=2'b00;
+    4'b0010:Do=2'b01;
+    4'b0100:Do=2'b10;
+    4'b1000:Do=2'b11;
+default:Do=2'bzz;
+endcase
+end
+end
+endmodule
+
+module multiplextb;
+reg [3:0]Din;
+reg En;
+wire [1:0]Do;
+multiplexer multi(Do,Din,En);
+initial
+begin
+    $dumpfile("test8.vcd");
+    $dumpvars(0,multiplextb);
+    En=1;
+    Din=4'b0001;#100;
+    Din=4'b0010;#100;
+    Din=4'b0100;#100;
+    Din=4'b1000;#100;
+     end
+      endmodule
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Write HDL implementation for a 4-bit right shift register using behavioral model. Simulate the same using structural model and depict the timing diagram for valid inputs.
+
+module Rshiftregister(input clk,input clrb,input SDR,output reg[3:0]Q);
+//serial in parallel out
+    always@ (posedge(clk),negedge(clrb))
+    if(~clrb) Q<=4'b0000;
+    else
+    Q<={SDR,Q[3:1]};
+    endmodule
+
+module testRshiftregister;
+    reg clk,clrb,SDR;
+    wire[3:0]Q;
+    
+    Rshiftregister RS(clk,clrb,SDR,Q);
+    initial
+    begin
+        $dumpfile("test2.vcd");
+        $dumpvars(0,testRshiftregister);
+        
+        clk=1;
+        clrb=0;
+        SDR=1;
+
+        #100
+        clrb=1;
+        SDR=1;
+        #150
+        SDR=0;
+        #200 $finish;
+    end
+    always #5 clk=~clk;
+    endmodule
+Write HDL implementation for a RS flip-flop using behavioral model. Simulate the same using structural model and depict the timing diagram for valid inputs.
+
+module SR_FF(sr,clk,q,qb);
+input[1:0]sr;
+input clk;
+output reg q=1'b0;
+output reg qb;
+always @(posedge clk)
+begin    
+    case(sr)
+        2'b00:q=q;
+        2'b01:q=1'b0;
+        2'b10:q=1'b1;
+        2'b11:q=1'bz;
+    endcase
+        qb=~q;
+    end
+    endmodule
+
+module testsrflipf;
+    reg[1:0]A;
+    reg c;
+    wire x,xb;
+    SR_FF srff(A,c,x,xb);
+    initial c=1'b0;
+    always #5 c=~c;
+    initial
+    begin
+        $dumpfile("test1.vcd");
+        $dumpvars(0,testsrflipf);
+        A=2'b00;#10
+        A=2'b01;#10
+        A=2'b10;#10
+        A=2'b11;
+        #20 $finish;
+    end
+    endmodule
+Write HDL implementation for a 3-bit up-counter using behavioral model. Simulate the same using structural model and depict the timing diagram for valid inputs.
+
+module counter_behav(count,rst,clk);
+input rst,clk;
+output reg[2:0]count;
+always@(posedge(clk))
+if(rst)
+count<=3'b000;
+else
+count<=count+1;
+endmodule
+
+module testmod;
+reg r,c;
+wire[2:0]ct;
+
+counter_behav countbeh(ct,r,c);
+initial
+begin
+    $dumpfile("test3.vcd");
+    $dumpvars(0,countbeh);
+    r=1;
+    
+    c=0;
+    #100 r=0;
+    #200 $finish;
+    end
+    always #5 c=~c;
+    endmodule
